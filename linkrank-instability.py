@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-collector_filter = 'route-views.linx'
+collector_filter = 'route-views.sg'
 start = 1438415400 + 10 * 60
-end = start + 3600 * 2 * 12
+end = start + 3600 * 2 * 24
 
 range = str(start) + '-' + str(end)
 filename = 'link-rank-instability-' + collector_filter + '-' + range + '.txt'
@@ -42,6 +42,7 @@ while current <= end:
     linkset = set()
 
     # Get next record
+    count = 0
     while(stream.get_next_record(rec)):
         elem = rec.get_next_elem()
         while(elem):
@@ -57,13 +58,16 @@ while current <= end:
                 linkset.add((ases[i], ases[i + 1]))
                 i += 1
             elem = rec.get_next_elem()
+            count += 1
+            print '\r',
+            print count,
+
+    list_linkset.append(linkset)
 
     buf = "linkset: " + str(len(linkset)) + " time: " + str(current) + \
           " " + current_time_long
-
     print buf
     print >> f, buf
-    list_linkset.append(linkset)
 
     if (len(list_linkset) > 1):
         downs = list_linkset[-2] - list_linkset[-1]
@@ -100,6 +104,17 @@ while current <= end:
                 history[link] += " up-" + current_time_short
             else:
                 history[link] = "up-" + current_time_short
+
+        dictlinkranks = {}
+        for k, v in sorted(nevents.items(), key=lambda x:x[1]):
+            #print k, " ", v
+            if (v in dictlinkranks):
+                dictlinkranks[v] += 1
+            else:
+                dictlinkranks[v] = 1
+        for k, v in sorted(dictlinkranks.items()):
+            print "[", k, "]:", v, " ",
+        print ""
 
     current += 3600 * 2;
     current_time_short = strftime("%Y/%m/%d-%H:%M:%S", gmtime(current))
