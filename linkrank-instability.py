@@ -40,6 +40,7 @@ while current <= end:
     stream.start()
 
     linkset = set()
+    linkset_indirect = set()
 
     # Get next record
     count = 0
@@ -56,11 +57,23 @@ while current <= end:
             while i + 1 < len(ases):
                 # print ases[i], " ", ases[i + 1]
                 linkset.add((ases[i], ases[i + 1]))
+                if (ases[i] < ases[i + 1]):
+                    linkset_indirect.add((ases[i], ases[i + 1]))
+                else:
+                    linkset_indirect.add((ases[i + 1], ases[i]))
+                linkset.add((ases[i], ases[i + 1]))
                 i += 1
             elem = rec.get_next_elem()
             count += 1
             print '\r',
             print count,
+
+    linkset_time = strftime("%Y-%m-%d-%H%M%S", gmtime(current))
+    linkset_file = 'link-rank-linkset-' + collector_filter + '-' + linkset_time + '.txt'
+    linkset_fp = open(linkset_file, 'w')
+    for link in linkset_indirect:
+        print >> linkset_fp, link
+    linkset_fp.close()
 
     list_linkset.append(linkset)
 
