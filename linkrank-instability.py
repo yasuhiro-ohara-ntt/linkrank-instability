@@ -2,7 +2,7 @@
 
 collector_filter = 'route-views.sg'
 start = 1438415400 + 10 * 60
-end = start + 3600 * 2 * 24
+end = start + 3600 * 2 * 12 * 3
 
 range = str(start) + '-' + str(end)
 filename = 'link-rank-instability-' + collector_filter + '-' + range + '.txt'
@@ -114,7 +114,9 @@ while current <= end:
                 dictlinkranks[v] = 1
         for k, v in sorted(dictlinkranks.items()):
             print "[", k, "]:", v, " ",
+            print >> f, "[", k, "]:", v, " ",
         print ""
+        print >> f, ""
 
     current += 3600 * 2;
     current_time_short = strftime("%Y/%m/%d-%H:%M:%S", gmtime(current))
