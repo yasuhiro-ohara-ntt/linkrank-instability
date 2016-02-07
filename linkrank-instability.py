@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-collector_filter = 'route-views.sg'
-start = 1438415400 + 10 * 60
-end = start + 3600 * 2 * 12 * 3
+collector_filter = 'route-views.linx'
+start = 1454284800
+# end = start + 3600 * 2 * 12 * 1
+end = start + 3600 * 2 * 1 * 1
 
 range = str(start) + '-' + str(end)
 filename = 'link-rank-instability-' + collector_filter + '-' + range + '.txt'
@@ -36,6 +37,16 @@ while current <= end:
     stream.add_filter('collector', collector_filter)
     stream.add_filter('record-type','ribs')
     stream.add_interval_filter(current - 10 * 60, current + 10 * 60)
+    stream.add_filter('peer-asn','3356')
+    stream.add_filter('peer-asn','174')
+    stream.add_filter('peer-asn','3257')
+    stream.add_filter('peer-asn','1299')
+    stream.add_filter('peer-asn','2914')
+    stream.add_filter('peer-asn','6453')
+    stream.add_filter('peer-asn','6762')
+    stream.add_filter('peer-asn','6939')
+    stream.add_filter('peer-asn','2828')
+    stream.add_filter('peer-asn','3549')
 
     stream.start()
 
@@ -135,7 +146,7 @@ while current <= end:
     current_time_short = strftime("%Y/%m/%d-%H:%M:%S", gmtime(current))
     current_time_long = strftime("%a, %d %b %Y %H:%M:%S", gmtime(current))
 
-print "writing to '" + filename + "' ... "
+print "writing to '" + filename + "' ... ",
 
 # print >> f, "down list: ", len(dictdown)
 # for k, v in sorted(dictdown.items(), key=lambda x:x[1]):
@@ -152,4 +163,20 @@ for k, v in sorted(nevents.items(), key=lambda x:x[1]):
 f.close()
 print "done."
 
+csv_start = strftime("%Y-%m-%d-%H%M%S", gmtime(start))
+csv_end = strftime("%Y-%m-%d-%H%M%S", gmtime(end))
+csv_file = 'link-instability-rank-' + collector_filter + '-' + csv_start + '-' + csv_end + '.csv'
+print "writing to '" + csv_file + "' ... ",
+csv_fp = open(csv_file, 'w')
+for link in linkset_indirect:
+    print >> csv_fp, link[0], ',', link[1], ',',
+    revlink = (link[1], link[0])
+    count = 0
+    if (link in nevents):
+        count += nevents[link]
+    if (revlink in nevents):
+        count += nevents[revlink]
+    print >> csv_fp, count
+csv_fp.close()
+print "done."
 
