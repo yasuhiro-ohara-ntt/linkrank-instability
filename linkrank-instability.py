@@ -2,8 +2,7 @@
 
 collector_filter = 'route-views.linx'
 start = 1454284800
-# end = start + 3600 * 2 * 12 * 1
-end = start + 3600 * 2 * 1 * 1
+end = start + 3600 * 2 * 12 * 7
 
 range = str(start) + '-' + str(end)
 filename = 'link-rank-instability-' + collector_filter + '-' + range + '.txt'
@@ -72,7 +71,6 @@ while current <= end:
                     linkset_indirect.add((ases[i], ases[i + 1]))
                 else:
                     linkset_indirect.add((ases[i + 1], ases[i]))
-                linkset.add((ases[i], ases[i + 1]))
                 i += 1
             elem = rec.get_next_elem()
             count += 1
@@ -88,8 +86,8 @@ while current <= end:
 
     list_linkset.append(linkset)
 
-    buf = "linkset: " + str(len(linkset)) + " time: " + str(current) + \
-          " " + current_time_long
+    buf = "linkset: " + str(len(linkset)) + '/' + str(len(linkset_indirect)) \
+          + " time: " + str(current) + " " + current_time_long
     print buf
     print >> f, buf
 
